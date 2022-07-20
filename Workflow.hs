@@ -1,5 +1,7 @@
   module Workflow where
-  import List (nub)
+  import Data.List (nub)
+  main :: IO ()    -- This says that main is an IO action.
+  main = return () -- This tells main to do nothing.
   type Property = String
   data ActivityId = BEGIN | START | STOP | NORMAL_STOP | ABNORMAL_STOP | END | Id String deriving (Eq,Show)
   data Duration = UNBOUNDED | Dur String deriving (Eq,Show)
@@ -10,9 +12,9 @@
   type RepeatExp = (Duration,Duration,Repeat,Repeat,Condition)
   data Condition = None | Ands [Ors] deriving (Eq,Show)
   data Ors = Ors [SCondition] deriving (Eq,Show)
-  type SCondition = (Range,Property) 
-  data Range = Bound RangeBound RangeBound | Emu [String] deriving (Eq,Show)  
-  data RangeBound = NoBound | Abdate Duration | Abdec Float | Abint Int | Rldate Property Duration | Rldec Property Float | Rlint Property Int deriving (Eq,Show)    
+  type SCondition = (Range,Property)
+  data Range = Bound RangeBound RangeBound | Emu [String] deriving (Eq,Show)
+  data RangeBound = NoBound | Abdate Duration | Abdec Float | Abint Int | Rldate Property Duration | Rldec Property Float | Rlint Property Int deriving (Eq,Show)
   conBW = Ands [Ors [(Emu ["Low"],"Insulin Levels")]]
   conCW = Ands [Ors [(Emu ["High"],"Insulin Levels")]]
   data ActType = Manual | Automatic deriving (Eq,Show)
@@ -38,7 +40,7 @@
   mkEventSq (Event a b c d e f g h) = Event a b c d e f (nub g) h
   type Workflow = [EventSequencing]
   equalW :: Workflow -> Workflow -> Bool
-  equalW w1 = and.(map ((flip elem) w1)) 
+  equalW w1 = and.(map ((flip elem) w1))
   getNme :: EventSequencing -> ActivityId
   getNme (Event a b c d e f g h) = a
   getPr :: EventSequencing -> PreAct
