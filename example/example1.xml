@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<workflow xmlns="http://www.comlab.ox.ac.uk/peter.wong/observation"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.comlab.ox.ac.uk/peter.wong/observation workflow.xsd">
+  <eventSequencing activityId="RANDOMISATION">
+    <prerequisites>
+      <prerequisite prerequisiteActivityId="ELIGIBILITY"/>
+    </prerequisites>
+    <observations>
+      <sequential>
+        <observationGroup>
+          <observation activityId="RANDOMISATION FORM SUBMISSION" minDelay="P0D" maxDelay="P14D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+      </sequential>
+    </observations>
+  </eventSequencing>
+  <eventSequencing activityId="ELIGIBILITY">
+    <prerequisites>
+      <prerequisite prerequisiteActivityId="START"/>
+    </prerequisites>
+    <observations>
+      <sequential>
+        <observationGroup>
+          <observation activityId="ELIGIBILITY FORM SUBMISSION" minDelay="P0D" maxDelay="P14D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+        <observationGroup>
+          <parallel>
+            <observationGroup>
+              <sequential>
+                <observationGroup>
+                  <observation activityId="ELIGIBILITY FORM SUBMISSION" minDelay="P0D"
+                    maxDelay="P14D">
+                    <actType>Manual</actType>
+                  </observation>
+                </observationGroup>
+                <observationGroup>
+                  <choice>
+                    <observationGroup>
+                      <sequential>
+                        <observationGroup>
+                          <observation activityId="ELIGIBILITY FORM SUBMISSION" minDelay="P0D"
+                            maxDelay="P14D">
+                            <actType>Manual</actType>
+                          </observation>
+                        </observationGroup>
+                      </sequential>
+                    </observationGroup>
+                    <observationGroup>
+                      <sequential>
+                        <observationGroup>
+                          <observation activityId="ELIGIBILITY FORM SUBMISSION" minDelay="P0D"
+                            maxDelay="P14D">
+                            <actType>Manual</actType>
+                          </observation>
+                        </observationGroup>
+                      </sequential>
+                    </observationGroup>
+                  </choice>
+                </observationGroup>
+              </sequential>
+            </observationGroup>
+            <observationGroup>
+              <sequential>
+                <observationGroup>
+                  <observation activityId="ELIGIBILITY FORM SUBMISSION" minDelay="P0D"
+                    maxDelay="P14D">
+                    <actType>Manual</actType>
+                  </observation>
+                </observationGroup>
+              </sequential>
+            </observationGroup>
+          </parallel>
+        </observationGroup>
+      </sequential>
+    </observations>
+  </eventSequencing>
+  <eventSequencing activityId="TREATMENT1">
+    <prerequisites>
+      <prerequisite prerequisiteActivityId="RANDOMISATION"/>
+    </prerequisites>
+    <observations>
+      <sequential>
+        <observationGroup>
+          <observation activityId="TREATMENT FORM SUBMISSION" minDelay="P0D" maxDelay="P14D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+      </sequential>
+    </observations>
+    <workUnits>
+      <sequential>
+        <workGroup>
+          <work id="Control1"/>
+        </workGroup>
+        <workGroup>
+          <work id="Control2"/>
+        </workGroup>
+      </sequential>
+    </workUnits>
+  </eventSequencing>
+  <eventSequencing activityId="FOLLOWUP">
+    <prerequisites>
+      <prerequisite prerequisiteActivityId="TREATMENT1"/>
+    </prerequisites>
+    <observations>
+      <sequential>
+        <observationGroup>
+          <observation activityId="FOLLOWUP FORM SUBMISSION" minDelay="P14D" maxDelay="P14D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+        <observationGroup>
+          <observation activityId="NORMAL_STOP" minDelay="P0D" maxDelay="P0D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+      </sequential>
+    </observations>
+  </eventSequencing>
+  <eventSequencing activityId="NORMAL_STOP">
+    <prerequisites>
+      <prerequisite prerequisiteActivityId="FOLLOWUP"/>
+    </prerequisites>
+    <observations>
+      <sequential>
+        <observationGroup>
+          <observation activityId="STOP" minDelay="P0D" maxDelay="P0D">
+            <actType>Manual</actType>
+          </observation>
+        </observationGroup>
+      </sequential>
+    </observations>
+  </eventSequencing>
+</workflow>

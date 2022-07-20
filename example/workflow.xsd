@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.comlab.ox.ac.uk/peter.wong/observation" elementFormDefault="qualified" xmlns="http://www.comlab.ox.ac.uk/peter.wong/observation">
+    <xs:element name="workflow" type="workflow"/>
+    <xs:complexType name="workflow">
+        <xs:annotation>
+            <xs:documentation>Each workflow instance is a collection of sequencing rules related by temporal/control flow depenedencies.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="eventSequencing" type="eventSequencing" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="eventSequencing">
+        <xs:annotation>
+            <xs:documentation>sequence rule</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+	    <xs:element name="prerequisites" type="prerequisiteGroup" />
+	    <xs:element name="dependent" type="dependentGroup" />
+	    <xs:element name="start" type="conjunct" minOccurs="0" />
+	    <xs:element name="terminate" type="conjunct" minOccurs="0" />
+            <xs:element name="observations" type="observationGroup" minOccurs="0" />
+            <xs:element name="eventRepeat" type="eventRepeat" minOccurs="0" maxOccurs="unbounded" />
+	    <xs:element name="workUnits" type="workGroup" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="activityId" use="required" type="xs:string"/>
+    </xs:complexType>
+    
+    <!-- Prerequisite Group-->
+    <xs:complexType name="prerequisiteGroup">
+    	<xs:choice>
+		<xs:element name="all" type="preList" />
+		<xs:element name="oneOf" type="preList" />
+		<xs:element name="prerequisite" type="prerequisite" />
+	</xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="preList">
+    	<xs:sequence>
+		<xs:element name="prerequisiteGroup" type="prerequisiteGroup" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:complexType>
+    
+    <!-- Prerequisite -->
+    <xs:complexType name="prerequisite">
+	<xs:attribute name="prerequisiteActivityId" use="required" type="xs:string"/>
+    </xs:complexType>
+    
+     <!-- Dependent Group-->
+    <xs:complexType name="dependentGroup">
+    	<xs:choice>
+		<xs:element name="all" type="dependentList" />
+		<xs:element name="oneOf" type="dependentList" />
+		<xs:element name="dependent" type="dependent" />
+	</xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="dependentList">
+    	<xs:sequence>
+		<xs:element name="dependentGroup" type="dependentGroup" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:complexType>
+    
+    <!-- Dependent -->
+    <xs:complexType name="dependent">
+	<xs:attribute name="dependentActivityId" use="required" type="xs:string"/>
+    </xs:complexType>
+    
+    <!-- A repeat clause -->
+    <xs:complexType name="eventRepeat">
+        <xs:annotation>
+            <xs:documentation>A repeat clause.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="conditions" type="conjunct" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="minDelay" use="optional" type="xs:duration">
+            <xs:annotation>
+                <xs:documentation>Minimum period of time after which the activity can be repeated.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="maxDelay" use="optional" type="xs:duration">
+            <xs:annotation>
+                <xs:documentation>Maximum period of time before which the activity must be repeated.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="minOccur" use="optional" type="xs:int"/>
+        <xs:attribute name="maxOccur" use="optional" type="xs:int"/>
+    </xs:complexType>
+    
+    <!-- Observation Group -->
+    <xs:complexType name="observationGroup">
+    	<xs:annotation>
+            <xs:documentation>An observation group.</xs:documentation>
+        </xs:annotation>
+    	<xs:choice>
+		<xs:element name="parallel" type="observationList" />
+		<xs:element name="choice" type="observationList" />
+		<xs:element name="sequential" type="observationList" />
+		<xs:element name="observation" type="observation" />
+	</xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="observationList">
+	<xs:sequence>
+		<xs:element name="observationGroup" type="observationGroup" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:complexType>
+    
+    <!-- Observation -->
+    <xs:complexType name="observation">
+    	<xs:sequence>
+		<xs:element name="conditions" type="conjunct" minOccurs="0" />
+		<xs:element name="actType">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Manual"/>
+					<xs:enumeration value="Auto"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:element>
+	</xs:sequence>
+    	<xs:attribute name="activityId" use="required" type="xs:string"/>
+        <xs:attribute name="minDelay" use="optional" type="xs:duration"/>
+        <xs:attribute name="maxDelay" use="optional" type="xs:duration"/>
+	<xs:attribute name="occur" use="optional" type="xs:int"/>
+    </xs:complexType>
+    
+    <!-- Work Group -->
+    <xs:complexType name="workGroup">
+    	<xs:annotation>
+            <xs:documentation>a work group.</xs:documentation>
+        </xs:annotation>
+    	<xs:choice>
+		<xs:element name="work_parallel" type="workList" />
+		<xs:element name="work_choice" type="workList" />
+		<xs:element name="work_sequential" type="workList" />
+		<xs:element name="work" type="work" />
+		<xs:element name="works" type="works" />
+	</xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="workList">
+	<xs:sequence>
+		<xs:element name="workGroup" type="workGroup" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:complexType>
+    
+    <!-- Work Unit -->
+    <xs:complexType name="work">
+    	<xs:sequence>
+			<xs:element name="treatment" type="treatment" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="workId" use="required" type="xs:string" />
+		<xs:attribute name="minDelay" use="optional" type="xs:duration"/>
+        <xs:attribute name="maxDelay" use="optional" type="xs:duration"/>
+		<xs:attribute name="occur" use="optional" type="xs:int"/>
+    </xs:complexType>
+    
+    <xs:complexType name="treatment">
+    	<xs:sequence>
+    		<xs:element name="name" type="xs:string"/>
+		<xs:element name="quantity" type="xs:string"/>
+		<xs:element name="method" type="xs:string"/>
+	</xs:sequence>
+    </xs:complexType>
+    
+    <!-- Work Set -->
+    <xs:complexType name="works">
+    	<xs:sequence>
+		<xs:element name="workBlock" type="workBlock" minOccurs="0" maxOccurs="1"/>
+	</xs:sequence>
+	<xs:attribute name="workId" use="required" type="xs:string" />
+	<xs:attribute name="minDelay" use="optional" type="xs:duration"/>
+	<xs:attribute name="occur" use="optional" type="xs:int"/>
+    </xs:complexType>
+    
+    <xs:complexType name="workBlock">
+    	<xs:annotation>
+            <xs:documentation>a work block.</xs:documentation>
+        </xs:annotation>
+    	<xs:choice>
+		<xs:element name="workbk_parallel" type="workSet" />
+		<xs:element name="workbk_choice" type="workSet" />
+		<xs:element name="workbk_sequential" type="workSet" />
+		<xs:element name="workunit" type="workUnit" />
+	</xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="workSet">
+		<xs:sequence>
+			<xs:element name="workBlock" type="workBlock" maxOccurs="unbounded" />
+		</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="workUnit">
+    	<xs:sequence>
+			<xs:element name="treatment" type="treatment" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="workId" use="required" type="xs:string" />
+		<xs:attribute name="minDelay" use="optional" type="xs:duration"/>
+        <xs:attribute name="maxDelay" use="optional" type="xs:duration"/>
+    </xs:complexType>
+    
+    
+    <!-- Condition -->
+    <xs:complexType name="conjunct">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+		<xs:sequence>
+			<xs:element name="disjunct" type="disjunct" maxOccurs="unbounded" />
+		</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="disjunct">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+		<xs:sequence>
+			<xs:element name="condition" type="condition" maxOccurs="unbounded" />
+		</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="condition">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="range" type="range">
+                <xs:annotation>
+                    <xs:documentation>this is the range object that restricts the property.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="property" type="property">
+                <xs:annotation>
+                    <xs:documentation>this is a property of the empirical studies</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Property -->
+    <xs:complexType name="property">
+    	<xs:sequence>
+	    <xs:element name="dataType" type="xs:anyType"/>
+            <xs:element name="comment" type="xs:string" minOccurs="0" />
+            <xs:element name="definitionLocation" type="xs:anyURI" minOccurs="0" />
+            <xs:element name="name" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="ID" use="required" type="xs:string"/>
+    </xs:complexType>
+    
+    <!-- Range (Enumeration or Interval) -->
+    <xs:complexType name="range">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="valueInterval" type="rangeInterval"/>
+                <xs:element name="valueSet" type="rangeSet"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Enumeration -->
+    <xs:complexType name="rangeSet">
+        <xs:annotation>
+            <xs:documentation>Set based ranges are unordered collections of enumeration codes from
+                the enumerated value domain of the common data element to which the range refers.
+                Each code may appear only once in the range.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="enumerationCode" type="xs:string" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Range Interval -->
+    <xs:complexType name="rangeInterval">
+        <xs:sequence>
+            <xs:element name="lowerBound" type="rangeBound" minOccurs="0"/>
+            <xs:element name="upperBound" type="rangeBound" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Range Bound -->
+    <xs:complexType name="rangeBound">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="absoluteDate" type="xs:date"/>
+                <xs:element name="absoluteDecimal" type="xs:decimal"/>
+                <xs:element name="absoluteInteger" type="xs:int"/>
+                <xs:element name="evalToDate" type="relativeDate"/>
+                <xs:element name="evalToDecimal" type="relativeDecimal"/>
+                <xs:element name="evalToInteger" type="relativeInteger"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="relativeDate">
+	<xs:complexContent>
+		<xs:extension base="relativeValue">
+			<xs:sequence>
+				<xs:element name="offset" type="xs:duration"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="relativeDecimal">
+	<xs:complexContent>
+		<xs:extension base="relativeValue">
+			<xs:sequence>
+				<xs:element name="offset" type="xs:decimal"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="relativeInteger">
+	<xs:complexContent>
+		<xs:extension base="relativeValue">
+			<xs:sequence>
+				<xs:element name="offset" type="xs:int"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="relativeValue" abstract="true">
+	<xs:sequence>
+		<xs:element name="property" type="property"/>
+	</xs:sequence>
+    </xs:complexType>
+    
+</xs:schema>

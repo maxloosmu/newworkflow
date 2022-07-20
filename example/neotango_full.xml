@@ -1,0 +1,543 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<workflow xmlns="http://www.comlab.ox.ac.uk/peter.wong/observation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.comlab.ox.ac.uk/peter.wong/observation workflow.xsd">
+	<eventSequencing activityId="START">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="BEGIN"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="ELIGIBILITY"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="STOP" minDelay="P0D" maxDelay="P0D" occur="0">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+	</eventSequencing>
+	<eventSequencing activityId="ELIGIBILITY">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="START"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="RANDOMISATION"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="ELIGIBILITY_SUBMISSION" minDelay="P0D" maxDelay="P14D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+	</eventSequencing>
+	<eventSequencing activityId="RANDOMISATION">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="ELIGIBILITY"/>
+		</prerequisites>
+		<dependent>
+			<oneOf>
+				<dependentGroup>
+					<dependent dependentActivityId="A1"/>
+				</dependentGroup>
+				<dependentGroup>
+					<dependent dependentActivityId="A2"/>
+				</dependentGroup>
+				<dependentGroup>
+					<dependent dependentActivityId="B2"/>
+				</dependentGroup>
+				<dependentGroup>
+					<dependent dependentActivityId="B1"/>
+				</dependentGroup>
+			</oneOf>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<parallel>
+						<observationGroup>
+							<sequential>
+								<observationGroup>
+									<observation activityId="ONSTUDY_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="1">
+										<actType>Manual</actType>
+									</observation>
+								</observationGroup>
+							</sequential>
+						</observationGroup>
+						<observationGroup>
+							<sequential>
+								<observationGroup>
+									<observation activityId="RANDOMISATION_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="1">
+										<actType>Manual</actType>
+									</observation>
+								</observationGroup>
+							</sequential>
+						</observationGroup>
+					</parallel>
+				</observationGroup>
+			</sequential>
+		</observations>
+		<workUnits>
+			<work_sequential>
+				<workGroup>
+					<works workId="Randomising" minDelay="P21D" occur="1">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workunit workId="Randomise" minDelay="P0D" maxDelay="P0D"/>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+			</work_sequential>
+		</workUnits>
+	</eventSequencing>
+	<eventSequencing activityId="FOLLOWUP">
+		<prerequisites>
+			<oneOf>
+				<prerequisiteGroup>
+					<prerequisite prerequisiteActivityId="A1"/>
+				</prerequisiteGroup>
+				<prerequisiteGroup>
+					<prerequisite prerequisiteActivityId="A2"/>
+				</prerequisiteGroup>
+				<prerequisiteGroup>
+					<prerequisite prerequisiteActivityId="B2"/>
+				</prerequisiteGroup>
+				<prerequisiteGroup>
+					<prerequisite prerequisiteActivityId="B1"/>
+				</prerequisiteGroup>
+			</oneOf>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="NORMAL_STOP"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="FOLLOWUP_SUBMISSION_1" minDelay="P3M" maxDelay="P3M" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="FOLLOWUP_SUBMISSION_2" minDelay="P4M" maxDelay="P4M" occur="3">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="FOLLOWUP_SUBMISSION_3" minDelay="P6M" maxDelay="P6M" occur="5">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="NORMAL_STOP" minDelay="P0D" maxDelay="P0D" occur="0">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+	</eventSequencing>
+	<eventSequencing activityId="A1">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="RANDOMISATION"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="FOLLOWUP"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="A1_EC_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A1_MID_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A1_T_SUBMISSION" minDelay="P14D" maxDelay="P14D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A1_END_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+		<workUnits>
+			<work_sequential>
+				<workGroup>
+					<works workId="A1_EC" minDelay="P21D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workbk_parallel>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="A1_EC_E" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>Epirubicin</name>
+															<quantity>90</quantity>
+															<method>slow push into fast drip</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="A1_EC_C" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>cyclophosphamide</name>
+															<quantity>600</quantity>
+															<method>slow push infusion</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+									</workbk_parallel>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+				<workGroup>
+					<works workId="A1_T" minDelay="P14D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workunit workId="A1_T_T" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Paclitaxel</name>
+											<quantity>175</quantity>
+											<method>3 hour infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+			</work_sequential>
+		</workUnits>
+	</eventSequencing>
+	<eventSequencing activityId="A2">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="RANDOMISATION"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="FOLLOWUP"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="A2_T_SUBMISSION" minDelay="P14D" maxDelay="P14D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A2_MID_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A2_EC_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="A2_END_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+		<workUnits>
+			<work_sequential>
+				<workGroup>
+					<works workId="A2_T" minDelay="P14D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workunit workId="A2_T_T" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Paclitaxel</name>
+											<quantity>175</quantity>
+											<method>3 hour infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+				<workGroup>
+					<works workId="A2_EC" minDelay="P21D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workbk_parallel>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="A2_EC_E" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>Epirubicin</name>
+															<quantity>90</quantity>
+															<method>slow push into fast drip</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="A2_EC_C" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>cyclophosphamide</name>
+															<quantity>600</quantity>
+															<method>slow push infusion</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+									</workbk_parallel>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+			</work_sequential>
+		</workUnits>
+	</eventSequencing>
+	<eventSequencing activityId="B2">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="RANDOMISATION"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="FOLLOWUP"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="B2_T_SUBMISSION" minDelay="P14D" maxDelay="P14D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B2_MID_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B2_EC_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B2_END_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+		<workUnits>
+			<work_sequential>
+				<workGroup>
+					<works workId="B2_TG" minDelay="P14D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workunit workId="B2_TG_T" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Paclitaxel</name>
+											<quantity>175</quantity>
+											<method>3 hour infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+								<workBlock>
+									<workunit workId="B2_TG_G" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Gemcitabine</name>
+											<quantity>2000</quantity>
+											<method>60 minute infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+				<workGroup>
+					<works workId="B2_EC" minDelay="P21D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workbk_parallel>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="B2_EC_E" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>Epirubicin</name>
+															<quantity>90</quantity>
+															<method>slow push into fast drip</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="B2_EC_C" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>cyclophosphamide</name>
+															<quantity>600</quantity>
+															<method>slow push infusion</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+									</workbk_parallel>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+			</work_sequential>
+		</workUnits>
+	</eventSequencing>
+	<eventSequencing activityId="B1">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="RANDOMISATION"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="FOLLOWUP"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="B1_EC_SUBMISSION" minDelay="P21D" maxDelay="P21D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B1_MID_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B1_TG_SUBMISSION" minDelay="P14D" maxDelay="P14D" occur="4">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+				<observationGroup>
+					<observation activityId="B1_END_SUBMISSION" minDelay="P0D" maxDelay="P0D" occur="1">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+		<workUnits>
+			<work_sequential>
+				<workGroup>
+					<works workId="B1_EC" minDelay="P21D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workbk_parallel>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="B1_EC_E" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>Epirubicin</name>
+															<quantity>90</quantity>
+															<method>slow push into fast drip</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+										<workBlock>
+											<workbk_sequential>
+												<workBlock>
+													<workunit workId="B1_EC_C" minDelay="P0D" maxDelay="P0D">
+														<treatment>
+															<name>cyclophosphamide</name>
+															<quantity>600</quantity>
+															<method>slow push infusion</method>
+														</treatment>
+													</workunit>
+												</workBlock>
+											</workbk_sequential>
+										</workBlock>
+									</workbk_parallel>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+				<workGroup>
+					<works workId="B1_TG" minDelay="P14D" occur="4">
+						<workBlock>
+							<workbk_sequential>
+								<workBlock>
+									<workunit workId="B1_TG_T" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Paclitaxel</name>
+											<quantity>175</quantity>
+											<method>3 hour infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+								<workBlock>
+									<workunit workId="B1_TG_G" minDelay="P0D" maxDelay="P0D">
+										<treatment>
+											<name>Gemcitabine</name>
+											<quantity>2000</quantity>
+											<method>60 minute infusion</method>
+										</treatment>
+									</workunit>
+								</workBlock>
+							</workbk_sequential>
+						</workBlock>
+					</works>
+				</workGroup>
+			</work_sequential>
+		</workUnits>
+	</eventSequencing>
+	<eventSequencing activityId="NORMAL_STOP">
+		<prerequisites>
+			<prerequisite prerequisiteActivityId="FOLLOWUP"/>
+		</prerequisites>
+		<dependent>
+			<dependent dependentActivityId="END"/>
+		</dependent>
+		<observations>
+			<sequential>
+				<observationGroup>
+					<observation activityId="STOP" minDelay="P0D" maxDelay="P0D" occur="0">
+						<actType>Manual</actType>
+					</observation>
+				</observationGroup>
+			</sequential>
+		</observations>
+	</eventSequencing>
+</workflow>

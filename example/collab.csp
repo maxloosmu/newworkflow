@@ -1,0 +1,95 @@
+datatype Node = startFlow14 | end0 | Order_Trip | xgateFlow13 | Reserve_Ticket | Cancel_Itin_T | abort0 | Change_Itin_T | startFlow13 | xgateFlow10 | startFlow23 | Receive_Order | Verify_Seat | Change_Itin_A | Cancel_Itin_A | exgateFlow30 | Receive_Reserve | Reserve_Seat | startFlow36 | end1
+datatype Msg = init | done
+datatype Proc = GTraveller | GAgent
+
+channel Flow14 , Flow10 , Flow19 , Flow20 , Flow13 , Flow17 , Flow11 , Change_Itin_Ti , Change_Itin_To , Flow9 , Flow18 , Flow12 , Flow23 , Flow25 , Flow38 , Flow27 , Verify_Seati , Verify_Seato , Flow30 , Flow57 , Flow47 , Flow49 , Flow39 , Flow36 , Flow37
+channel starts : Node
+channel fin , aborts : { 0, 0, 1 }
+channel Message50 , Message51 , Message52 , Message54 , Message55 , Message56 , Message58 , Message59 : Msg
+
+
+APool(startFlow14) = { aborts.0, fin.0, Flow14 }
+APool(end0) = { aborts.0, fin.0, Flow10 }
+APool(Order_Trip) = { aborts.0, fin.0, Flow14, Flow19, starts.Order_Trip }
+APool(xgateFlow13) = { aborts.0, fin.0, Flow20, Flow13, Flow17 }
+APool(Reserve_Ticket) = { aborts.0, fin.0, Flow17, Flow10, starts.Reserve_Ticket }
+APool(Cancel_Itin_T) = { aborts.0, fin.0, Flow13, Flow11, starts.Cancel_Itin_T }
+APool(abort0) = { aborts.0, fin.0, Flow11 }
+APool(Change_Itin_T) = { aborts.0, fin.0, Flow19, Flow20, starts.Change_Itin_T, Change_Itin_Ti, Change_Itin_To }
+ATraveller(startFlow13) = { aborts.0, fin.0, Flow13 }
+ATraveller(Order_Trip) = { aborts.0, fin.0, Flow13, Flow14, Message50.init, Message51.done, starts.Order_Trip }
+ATraveller(Change_Itin_T) = { aborts.0, fin.0, Flow14, Flow9, Message52.init, Message54.done, starts.Change_Itin_T, Change_Itin_Ti, Change_Itin_To }
+ATraveller(Cancel_Itin_T) = { aborts.0, fin.0, Flow10, Flow18, Message55.init, Message56.done, starts.Cancel_Itin_T }
+ATraveller(xgateFlow10) = { aborts.0, fin.0, Flow9, Flow10, Flow12 }
+ATraveller(Reserve_Ticket) = { aborts.0, fin.0, Flow12, Flow17, Message58.init, Message59.done, starts.Reserve_Ticket }
+ATraveller(end0) = { aborts.0, fin.0, Flow17 }
+ATraveller(abort0) = { aborts.0, fin.0, Flow18 }
+AAgent(startFlow23) = { aborts.0, fin.0, Flow23 }
+AAgent(Receive_Order) = { aborts.0, fin.0, Flow23, Flow25, Message50.init, Message51.done, starts.Receive_Order }
+AAgent(Verify_Seat) = { aborts.0, fin.0, Flow25, Flow38, Flow27, starts.Verify_Seat, Verify_Seati, Verify_Seato }
+AAgent(Change_Itin_A) = { aborts.0, fin.0, Flow30, Flow38, Message54.done, starts.Change_Itin_A }
+AAgent(Cancel_Itin_A) = { aborts.0, fin.0, Flow57, Flow47, Message56.done, starts.Cancel_Itin_A }
+AAgent(abort0) = { aborts.0, fin.0, Flow47 }
+AAgent(end0) = { aborts.0, fin.0, Flow49 }
+AAgent(exgateFlow30) = { aborts.0, fin.0, Flow27, Flow30, Flow39, Flow57, Message52.init, Message55.init, Message58.init }
+AAgent(Receive_Reserve) = { aborts.0, fin.0, Flow39, Flow49, Flow36, Flow37, starts.Reserve_Seat, fin.1 }
+AReceive_Reserve(Reserve_Seat) = { fin.1, Flow36, Flow37, starts.Reserve_Seat }
+AReceive_Reserve(startFlow36) = { fin.1, Flow36 }
+AReceive_Reserve(end1) = { fin.1, Flow37 }
+GA(GTraveller) = { Flow13, Flow14, Message50.init, Message51.done, starts.Order_Trip, Flow9, Message52.init, Message54.done, starts.Change_Itin_T, Change_Itin_Ti, Change_Itin_To, Flow10, Flow18, Message55.init, Message56.done, starts.Cancel_Itin_T, Flow12, Flow17, Message58.init, Message59.done, starts.Reserve_Ticket, fin.0, aborts.0 }
+GA(GAgent) = { Flow23, Flow25, Message50.init, Message51.done, starts.Receive_Order, Flow38, Flow27, starts.Verify_Seat, Verify_Seati, Verify_Seato, Flow30, Message54.done, starts.Change_Itin_A, Flow57, Flow47, Message56.done, starts.Cancel_Itin_A, aborts.0, Flow49, fin.0, Flow39, Message52.init, Message55.init, Message58.init, Flow36, Flow37, starts.Reserve_Seat, fin.1 }
+
+PPool(startFlow14) = ( ( Flow14 -> ( SKIP ) ) ; ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) )
+PPool(Order_Trip) = ( ( ( ( Flow14 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Order_Trip -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Flow19 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PPool(Order_Trip) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PPool(xgateFlow13) = ( ( ( ( Flow20 -> ( SKIP ) ) ; ( ( Flow13 -> ( SKIP ) ) [] ( Flow17 -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PPool(xgateFlow13) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PPool(Reserve_Ticket) = ( ( ( ( Flow17 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Reserve_Ticket -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Flow10 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PPool(Reserve_Ticket) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PPool(Cancel_Itin_T) = ( ( ( ( Flow13 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Cancel_Itin_T -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Flow11 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PPool(Cancel_Itin_T) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PPool(end0) = ( ( ( Flow10 -> ( SKIP ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( fin.0 -> ( SKIP ) ) ) [] ( [] i:{  } @ ( fin.i -> ( SKIP ) ) )
+PPool(abort0) = ( ( Flow11 -> ( SKIP ) ) ; ( aborts.0 -> ( STOP ) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PPool(Change_Itin_T) = ( ( ( ( Flow19 -> ( SKIP ) ) ; ( ( Flow20 -> ( SKIP ) ) [] ( ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) \ ( { Change_Itin_Ti, Change_Itin_To } ) ) ; ( ( Flow20 -> ( SKIP ) ) [] ( ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) \ ( { Change_Itin_Ti, Change_Itin_To } ) ) ; ( ( Flow20 -> ( SKIP ) ) [] ( ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) \ ( { Change_Itin_Ti, Change_Itin_To } ) ) ; ( Flow20 -> ( SKIP ) ) ) ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PPool(Change_Itin_T) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+LPool = || iPool:{ startFlow14, end0, Order_Trip, xgateFlow13, Reserve_Ticket, Cancel_Itin_T, abort0, Change_Itin_T } @ [ APool(iPool) ] ( PPool(iPool) )
+DFPool = ( |~| i:{ starts.Order_Trip, starts.Reserve_Ticket, starts.Cancel_Itin_T, starts.Change_Itin_T } @ ( i -> ( DFPool ) ) ) |~| ( ( |~| i:{ fin.0 } @ ( i -> ( SKIP ) ) ) |~| ( |~| i:{ aborts.0 } @ ( i -> ( STOP ) ) ) )
+UPool = ( LPool ) \ ( { Flow14, Flow10, Flow19, Flow20, Flow13, Flow17, Flow11 } )
+PTraveller(startFlow13) = ( ( Flow13 -> ( SKIP ) ) ; ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) )
+PTraveller(Order_Trip) = ( ( ( ( Flow13 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Order_Trip -> ( SKIP ) ) ; ( ( ( Message50.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message51.done -> ( SKIP ) ) ) ) ; ( Flow14 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PTraveller(Order_Trip) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(Cancel_Itin_T) = ( ( ( ( Flow10 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Cancel_Itin_T -> ( SKIP ) ) ; ( ( ( Message55.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message56.done -> ( SKIP ) ) ) ) ; ( Flow18 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PTraveller(Cancel_Itin_T) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(xgateFlow10) = ( ( ( ( Flow9 -> ( SKIP ) ) ; ( ( Flow10 -> ( SKIP ) ) [] ( Flow12 -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PTraveller(xgateFlow10) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(Reserve_Ticket) = ( ( ( ( Flow12 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Reserve_Ticket -> ( SKIP ) ) ; ( ( ( Message58.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message59.done -> ( SKIP ) ) ) ) ; ( Flow17 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PTraveller(Reserve_Ticket) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(end0) = ( ( ( Flow17 -> ( SKIP ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( fin.0 -> ( SKIP ) ) ) [] ( [] i:{  } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(abort0) = ( ( Flow18 -> ( SKIP ) ) ; ( aborts.0 -> ( STOP ) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PTraveller(Change_Itin_T) = ( ( ( ( Flow14 -> ( SKIP ) ) ; ( ( ( ( SKIP ) ; ( ( Flow9 -> ( SKIP ) ) [] ( Change_Itin_Ti -> ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( ( Change_Itin_To -> ( SKIP ) ) ; ( ( Flow9 -> ( SKIP ) ) [] ( Change_Itin_Ti -> ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( ( Change_Itin_To -> ( SKIP ) ) ; ( ( Flow9 -> ( SKIP ) ) [] ( Change_Itin_Ti -> ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( Change_Itin_To -> ( Flow9 -> ( SKIP ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) [| { Message52.init, Message54.done, Flow9, Change_Itin_Ti, Change_Itin_To } |] ( ( Flow9 -> ( SKIP ) ) [] ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) ; ( ( Flow9 -> ( SKIP ) ) [] ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) ; ( ( Flow9 -> ( SKIP ) ) [] ( ( ( Change_Itin_Ti -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Change_Itin_T -> ( SKIP ) ) ; ( ( ( Message52.init -> ( SKIP ) ) ; ( ( SKIP ) ; ( Message54.done -> ( SKIP ) ) ) ) ; ( Change_Itin_To -> ( SKIP ) ) ) ) ) ) ; ( Flow9 -> ( SKIP ) ) ) ) ) ) ) ) ) \ ( { Change_Itin_Ti, Change_Itin_To } ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PTraveller(Change_Itin_T) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+LTraveller = || iTraveller:{ startFlow13, Order_Trip, Change_Itin_T, Cancel_Itin_T, xgateFlow10, Reserve_Ticket, end0, abort0 } @ [ ATraveller(iTraveller) ] ( PTraveller(iTraveller) )
+DFTraveller = ( |~| i:{ starts.Order_Trip, starts.Change_Itin_T, starts.Cancel_Itin_T, starts.Reserve_Ticket } @ ( i -> ( DFTraveller ) ) ) |~| ( ( |~| i:{ fin.0 } @ ( i -> ( SKIP ) ) ) |~| ( |~| i:{ aborts.0 } @ ( i -> ( STOP ) ) ) )
+UTraveller = ( LTraveller ) \ ( { Flow13, Flow14, Flow9, Flow10, Flow18, Flow12, Flow17 } )
+PAgent(startFlow23) = ( ( Flow23 -> ( SKIP ) ) ; ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) )
+PAgent(Receive_Order) = ( ( ( ( Flow23 -> ( SKIP ) ) ; ( ( Message50.init -> ( SKIP ) ) ; ( ( starts.Receive_Order -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( Message51.done -> ( SKIP ) ) ; ( SKIP ) ) ) ; ( Flow25 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(Receive_Order) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(Change_Itin_A) = ( ( ( ( Flow30 -> ( SKIP ) ) ; ( ( starts.Change_Itin_A -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( Message54.done -> ( SKIP ) ) ; ( SKIP ) ) ) ; ( Flow38 -> ( SKIP ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(Change_Itin_A) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(Cancel_Itin_A) = ( ( ( ( Flow57 -> ( SKIP ) ) ; ( ( starts.Cancel_Itin_A -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( Message56.done -> ( SKIP ) ) ; ( SKIP ) ) ) ; ( Flow47 -> ( SKIP ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(Cancel_Itin_A) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(exgateFlow30) = ( ( ( ( Flow27 -> ( SKIP ) ) ; ( ( ( Message52.init -> ( SKIP ) ) ; ( Flow30 -> ( SKIP ) ) ) [] ( ( ( Message55.init -> ( SKIP ) ) ; ( Flow57 -> ( SKIP ) ) ) [] ( ( Message58.init -> ( SKIP ) ) ; ( Flow39 -> ( SKIP ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(exgateFlow30) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(Receive_Reserve) = ( ( ( ( Flow39 -> ( SKIP ) ) ; ( ( LReceive_Reserve ) ; ( Flow49 -> ( SKIP ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(Receive_Reserve) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(end0) = ( ( ( Flow49 -> ( SKIP ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( fin.0 -> ( SKIP ) ) ) [] ( [] i:{  } @ ( fin.i -> ( SKIP ) ) )
+PAgent(abort0) = ( ( Flow47 -> ( SKIP ) ) ; ( aborts.0 -> ( STOP ) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PAgent(Verify_Seat) = ( ( ( ( ( Flow25 -> ( SKIP ) ) [] ( Flow38 -> ( SKIP ) ) ) ; ( ( Flow27 -> ( SKIP ) ) [] ( ( ( ( Verify_Seati -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Verify_Seat -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Verify_Seato -> ( SKIP ) ) ) ) ) ) \ ( { Verify_Seati, Verify_Seato } ) ) ; ( ( Flow27 -> ( SKIP ) ) [] ( ( ( ( Verify_Seati -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Verify_Seat -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Verify_Seato -> ( SKIP ) ) ) ) ) ) \ ( { Verify_Seati, Verify_Seato } ) ) ; ( ( Flow27 -> ( SKIP ) ) [] ( ( ( ( Verify_Seati -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Verify_Seat -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Verify_Seato -> ( SKIP ) ) ) ) ) ) \ ( { Verify_Seati, Verify_Seato } ) ) ; ( Flow27 -> ( SKIP ) ) ) ) ) ) ) ) ) /\ ( [] i:{ 0 } @ ( aborts.i -> ( STOP ) ) ) ) ; ( PAgent(Verify_Seat) ) ) [] ( [] i:{ 0 } @ ( fin.i -> ( SKIP ) ) )
+PReceive_Reserve(Reserve_Seat) = ( ( ( Flow36 -> ( SKIP ) ) ; ( ( SKIP ) ; ( ( starts.Reserve_Seat -> ( SKIP ) ) ; ( ( ( SKIP ) ; ( ( SKIP ) ; ( SKIP ) ) ) ; ( Flow37 -> ( SKIP ) ) ) ) ) ) ; ( PReceive_Reserve(Reserve_Seat) ) ) [] ( [] i:{ 1 } @ ( fin.i -> ( SKIP ) ) )
+PReceive_Reserve(startFlow36) = ( Flow36 -> ( SKIP ) ) ; ( [] i:{ 1 } @ ( fin.i -> ( SKIP ) ) )
+PReceive_Reserve(end1) = ( Flow37 -> ( SKIP ) ) ; ( fin.1 -> ( SKIP ) )
+LReceive_Reserve = || iReceive_Reserve:{ Reserve_Seat, startFlow36, end1 } @ [ AReceive_Reserve(iReceive_Reserve) ] ( PReceive_Reserve(iReceive_Reserve) )
+LAgent = || iAgent:{ startFlow23, Receive_Order, Verify_Seat, Change_Itin_A, Cancel_Itin_A, abort0, end0, exgateFlow30, Receive_Reserve } @ [ AAgent(iAgent) ] ( PAgent(iAgent) )
+DFAgent = ( |~| i:{ starts.Receive_Order, starts.Verify_Seat, starts.Change_Itin_A, starts.Cancel_Itin_A, starts.Reserve_Seat, fin.1 } @ ( i -> ( DFAgent ) ) ) |~| ( ( |~| i:{ fin.0 } @ ( i -> ( SKIP ) ) ) |~| ( |~| i:{ aborts.0 } @ ( i -> ( STOP ) ) ) )
+UAgent = ( LAgent ) \ ( { Flow23, Flow25, Flow38, Flow27, Flow30, Flow57, Flow47, Flow49, Flow39, Flow36, Flow37 } )
+DF = ( |~| i:{ starts.Order_Trip, starts.Change_Itin_T, starts.Cancel_Itin_T, starts.Reserve_Ticket, starts.Receive_Order, starts.Verify_Seat, starts.Change_Itin_A, starts.Cancel_Itin_A, starts.Reserve_Seat, fin.1 } @ ( i -> ( DF ) ) ) |~| ( ( |~| i:{ fin.0, fin.0 } @ ( i -> ( SKIP ) ) ) |~| ( |~| i:{ aborts.0, aborts.0 } @ ( i -> ( STOP ) ) ) )
+
+UC =
+let
+	UGP(GTraveller) = UTraveller
+	UGP(GAgent) = UAgent
+within
+	( || i:{ GTraveller, GAgent } @ [ GA(i) ] ( UGP(i) ) ) \ ( { Message50.init, Message51.done, Message52.init, Message54.done, Message55.init, Message56.done, Message58.init, Message59.done, Message50.init, Message51.done, Message54.done, Message56.done, Message52.init, Message55.init, Message58.init } )
+
+
+assert DFPool [F= UPool
+assert DFTraveller [F= ( UTraveller ) \ ( { Message50.init, Message51.done, Message52.init, Message54.done, Message55.init, Message56.done, Message58.init, Message59.done } )
+assert DFAgent [F= ( UAgent ) \ ( { Message50.init, Message51.done, Message54.done, Message56.done, Message52.init, Message55.init, Message58.init } )
+assert DF [F= UC
+assert ( UPool ) \ ( {| fin,aborts |} ) [F= ( UC ) \ ( diff(Events,{ starts.Order_Trip, starts.Reserve_Ticket, starts.Cancel_Itin_T, starts.Change_Itin_T }) )
+
